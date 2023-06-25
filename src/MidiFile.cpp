@@ -76,7 +76,7 @@ const char* MidiFile::GMinstrument[128] = {
 
 MidiFile::MidiFile(void) {
 	m_events.resize(1);
-	for (int i=0; i<(int)m_events.size(); i++) {
+	for (int i=0; i<int(m_events.size()); i++) {
 		m_events[i] = new MidiEventList;
 	}
 }
@@ -84,7 +84,7 @@ MidiFile::MidiFile(void) {
 
 MidiFile::MidiFile(const std::string& filename) {
 	m_events.resize(1);
-	for (int i=0; i<(int)m_events.size(); i++) {
+	for (int i=0; i<int(m_events.size()); i++) {
 		m_events[i] = new MidiEventList;
 	}
 	read(filename);
@@ -93,7 +93,7 @@ MidiFile::MidiFile(const std::string& filename) {
 
 MidiFile::MidiFile(std::istream& input) {
 	m_events.resize(1);
-	for (int i=0; i<(int)m_events.size(); i++) {
+	for (int i=0; i<int(m_events.size()); i++) {
 		m_events[i] = new MidiEventList;
 	}
 	read(input);
@@ -313,7 +313,7 @@ bool MidiFile::readSmf(std::istream& input) {
 	} else if (character != 'M') {
 		std::cerr << "File " << filename << " is not a MIDI file" << std::endl;
 		std::cerr << "Expecting 'M' at first byte but got '"
-		     << (char)character << "'" << std::endl;
+		     << char(character) << "'" << std::endl;
 		m_rwstatus = false; return m_rwstatus;
 	}
 
@@ -325,7 +325,7 @@ bool MidiFile::readSmf(std::istream& input) {
 	} else if (character != 'T') {
 		std::cerr << "File " << filename << " is not a MIDI file" << std::endl;
 		std::cerr << "Expecting 'T' at second byte but got '"
-		     << (char)character << "'" << std::endl;
+		     << char(character) << "'" << std::endl;
 		m_rwstatus = false; return m_rwstatus;
 	}
 
@@ -337,7 +337,7 @@ bool MidiFile::readSmf(std::istream& input) {
 	} else if (character != 'h') {
 		std::cerr << "File " << filename << " is not a MIDI file" << std::endl;
 		std::cerr << "Expecting 'h' at third byte but got '"
-		     << (char)character << "'" << std::endl;
+		     << char(character) << "'" << std::endl;
 		m_rwstatus = false; return m_rwstatus;
 	}
 
@@ -349,7 +349,7 @@ bool MidiFile::readSmf(std::istream& input) {
 	} else if (character != 'd') {
 		std::cerr << "File " << filename << " is not a MIDI file" << std::endl;
 		std::cerr << "Expecting 'd' at fourth byte but got '"
-		     << (char)character << "'" << std::endl;
+		     << char(character) << "'" << std::endl;
 		m_rwstatus = false; return m_rwstatus;
 	}
 
@@ -452,7 +452,7 @@ bool MidiFile::readSmf(std::istream& input) {
 		} else if (character != 'M') {
 			std::cerr << "File " << filename << " is not a MIDI file" << std::endl;
 			std::cerr << "Expecting 'M' at first byte in track but got '"
-			     << (char)character << "'" << std::endl;
+			     << char(character) << "'" << std::endl;
 			m_rwstatus = false; return m_rwstatus;
 		}
 
@@ -465,7 +465,7 @@ bool MidiFile::readSmf(std::istream& input) {
 		} else if (character != 'T') {
 			std::cerr << "File " << filename << " is not a MIDI file" << std::endl;
 			std::cerr << "Expecting 'T' at second byte in track but got '"
-			     << (char)character << "'" << std::endl;
+			     << char(character) << "'" << std::endl;
 			m_rwstatus = false; return m_rwstatus;
 		}
 
@@ -478,7 +478,7 @@ bool MidiFile::readSmf(std::istream& input) {
 		} else if (character != 'r') {
 			std::cerr << "File " << filename << " is not a MIDI file" << std::endl;
 			std::cerr << "Expecting 'r' at third byte in track but got '"
-			     << (char)character << "'" << std::endl;
+			     << char(character) << "'" << std::endl;
 			m_rwstatus = false; return m_rwstatus;
 		}
 
@@ -491,7 +491,7 @@ bool MidiFile::readSmf(std::istream& input) {
 		} else if (character != 'k') {
 			std::cerr << "File " << filename << " is not a MIDI file" << std::endl;
 			std::cerr << "Expecting 'k' at fourth byte in track but got '"
-			     << (char)character << "'" << std::endl;
+			     << char(character) << "'" << std::endl;
 			m_rwstatus = false; return m_rwstatus;
 		}
 
@@ -503,7 +503,7 @@ bool MidiFile::readSmf(std::istream& input) {
 
 		// Set the size of the track allocation so that it might
 		// approximately fit the data.
-		m_events[i]->reserve((int)longdata/2);
+		m_events[i]->reserve(int(longdata/2));
 		m_events[i]->clear();
 
 		// Read MIDI events in the track, which are pairs of VLV values
@@ -514,7 +514,7 @@ bool MidiFile::readSmf(std::istream& input) {
 		int absticks = 0;
 		while (!input.eof()) {
 			longdata = readVLValue(input);
-			absticks += longdata;
+			absticks += int(longdata);
 			xstatus = extractMidiData(input, bytes, runningCommand);
 			if (xstatus == 0) {
 				m_rwstatus = false; return m_rwstatus;
@@ -610,7 +610,7 @@ bool MidiFile::write(std::ostream& out) {
 		trackdata.reserve(123456);   // make the track data larger than
 		                             // expected data input
 		trackdata.clear();
-		for (j=0; j<(int)m_events[i]->size(); j++) {
+		for (j=0; j<int(m_events[i]->size()); j++) {
 			if ((*m_events[i])[j].empty()) {
 				// Don't write empty m_events (probably a delete message).
 				continue;
@@ -631,19 +631,19 @@ bool MidiFile::write(std::ostream& out) {
 				// do not insert the VLV byte length yourself, as this code will
 				// do it for you automatically.
 				trackdata.push_back((*m_events[i])[j][0]); // 0xf0 or 0xf7;
-				writeVLValue(((int)(*m_events[i])[j].size())-1, trackdata);
-				for (k=1; k<(int)(*m_events[i])[j].size(); k++) {
+				writeVLValue(int((*m_events[i])[j].size())-1, trackdata);
+				for (k=1; k<int((*m_events[i])[j].size()); k++) {
 					trackdata.push_back((*m_events[i])[j][k]);
 				}
 			} else {
 				// non-sysex type of message, so just output the
 				// bytes of the message:
-				for (k=0; k<(int)(*m_events[i])[j].size(); k++) {
+				for (k=0; k<int((*m_events[i])[j].size()); k++) {
 					trackdata.push_back((*m_events[i])[j][k]);
 				}
 			}
 		}
-		size = (int)trackdata.size();
+		size = int(trackdata.size());
 		if ((size < 3) || !((trackdata[size-3] == 0xff)
 				&& (trackdata[size-2] == 0x2f))) {
 			trackdata.push_back(endoftrack[0]);
@@ -661,11 +661,11 @@ bool MidiFile::write(std::ostream& out) {
 		ch = 'k'; out << ch;
 
 		// A. write the size of the MIDI data to follow:
-		longdata = (int)trackdata.size();
+		longdata = int(trackdata.size());
 		writeBigEndianULong(out, longdata);
 
 		// B. write the actual data
-		out.write((char*)trackdata.data(), trackdata.size());
+		out.write(reinterpret_cast<char*>(trackdata.data()), trackdata.size());
 	}
 
 	if (oldTimeState == TIME_STATE_ABSOLUTE) {
@@ -709,7 +709,7 @@ bool MidiFile::writeBase64(std::ostream& out, int width) {
 		out << encoded;
 		return status;
 	}
-	int length = (int)encoded.size();
+	int length = int(encoded.size());
 	for (int i=0; i<length; i++) {
 		out << encoded[i];
 		if ((i + 1) % width == 0) {
@@ -770,11 +770,11 @@ bool MidiFile::writeHex(const std::string& filename, int width) {
 bool MidiFile::writeHex(std::ostream& out, int width) {
 	std::stringstream tempstream;
 	MidiFile::write(tempstream);
-	int len = (int)tempstream.str().length();
+	int len = int(tempstream.str().length());
 	int wordcount = 1;
 	int linewidth = width >= 0 ? width : 25;
 	for (int i=0; i<len; i++) {
-		int value = (unsigned char)tempstream.str()[i];
+		int value = int(tempstream.str()[i]);
 		out << std::hex << std::setw(2) << std::setfill('0') << value;
 		if (linewidth) {
 			if (i < len - 1) {
@@ -911,7 +911,7 @@ const MidiEventList& MidiFile::operator[](int aTrack) const {
 //
 
 int MidiFile::getTrackCount(void) const {
-	return (int)m_events.size();
+	return int(m_events.size());
 }
 
 //
@@ -939,7 +939,7 @@ int MidiFile::size(void) const {
 //
 
 void MidiFile::removeEmpties(void) {
-	for (int i=0; i<(int)m_events.size(); i++) {
+	for (int i=0; i<int(m_events.size()); i++) {
 		m_events[i]->removeEmpties();
 	}
 }
@@ -1034,14 +1034,14 @@ void MidiFile::joinTracks(void) {
 	for (i=0; i<length; i++) {
 		messagesum += (*m_events[i]).size();
 	}
-	joinedTrack->reserve((int)(messagesum + 32 + messagesum * 0.1));
+	joinedTrack->reserve(int(messagesum + 32 + messagesum * 0.1));
 
 	int oldTimeState = getTickState();
 	if (oldTimeState == TIME_STATE_DELTA) {
 		makeAbsoluteTicks();
 	}
 	for (i=0; i<length; i++) {
-		for (j=0; j<(int)m_events[i]->size(); j++) {
+		for (j=0; j<int(m_events[i]->size()); j++) {
 			joinedTrack->push_back_no_copy(&(*m_events[i])[j]);
 		}
 	}
@@ -1279,7 +1279,7 @@ void MidiFile::makeDeltaTicks(void) {
 		} else {
 			continue;
 		}
-		for (j=1; j<(int)m_events[i]->size(); j++) {
+		for (j=1; j<int(m_events[i]->size()); j++) {
 			temp = (*m_events[i])[j].tick;
 			int deltatick = temp - timedata[i];
 			if (deltatick < 0) {
@@ -1329,7 +1329,7 @@ void MidiFile::makeAbsoluteTicks(void) {
 		} else {
 			continue;
 		}
-		for (j=1; j<(int)m_events[i]->size(); j++) {
+		for (j=1; j<int(m_events[i]->size()); j++) {
 			timedata[i] += (*m_events[i])[j].tick;
 			(*m_events[i])[j].tick = timedata[i];
 		}
@@ -1426,7 +1426,7 @@ int MidiFile::getFileDurationInTicks(void) {
 //
 
 double MidiFile::getFileDurationInQuarters(void) {
-	return (double)getFileDurationInTicks() / (double)getTicksPerQuarterNote();
+	return double(getFileDurationInTicks()) / double(getTicksPerQuarterNote());
 }
 
 
@@ -1520,7 +1520,7 @@ double MidiFile::getTimeInSeconds(int tickvalue) {
 		// Since the code is not yet written, kill the program at this point:
 		return linearSecondInterpolationAtTick(tickvalue);
 	} else {
-		return ((_TickTime*)ptr)->seconds;
+		return (reinterpret_cast<_TickTime*>(ptr))->seconds;
 	}
 }
 
@@ -1555,7 +1555,7 @@ double MidiFile::getAbsoluteTickTime(double starttime) {
 		// the time in tick values to figure out the final time in ticks.
 		return linearTickInterpolationAtSecond(starttime);
 	} else {
-		return ((_TickTime*)ptr)->tick;
+		return (reinterpret_cast<_TickTime*>(ptr))->tick;
 	}
 
 }
@@ -1690,7 +1690,7 @@ MidiEvent* MidiFile::addMetaEvent(int aTrack, int aTick, int aType,
 		std::vector<uchar>& metaData) {
 	m_timemapvalid = 0;
 	int i;
-	int length = (int)metaData.size();
+	int length = int(metaData.size());
 	std::vector<uchar> fulldata;
 	uchar size[23] = {0};
 	int lengthsize = makeVLV(size, length);
@@ -1711,12 +1711,12 @@ MidiEvent* MidiFile::addMetaEvent(int aTrack, int aTick, int aType,
 
 MidiEvent* MidiFile::addMetaEvent(int aTrack, int aTick, int aType,
 		const std::string& metaData) {
-	int length = (int)metaData.size();
+	int length = int(metaData.size());
 	std::vector<uchar> buffer;
 	buffer.resize(length);
 	int i;
 	for (i=0; i<length; i++) {
-		buffer[i] = (uchar)metaData[i];
+		buffer[i] = uchar(metaData[i]);
 	}
 	return addMetaEvent(aTrack, aTick, aType, buffer);
 }
@@ -1908,7 +1908,7 @@ MidiEvent* MidiFile::addCompoundTimeSignature(int aTrack, int aTick, int top,
 
 int MidiFile::makeVLV(uchar *buffer, int number) {
 
-	unsigned long value = (unsigned long)number;
+	unsigned long value = ulong(number);
 
 	if (value >= (1 << 28)) {
 		std::cerr << "Error: Meta-message size too large to handle" << std::endl;
@@ -2374,10 +2374,10 @@ void MidiFile::mergeTracks(int aTrack1, int aTrack2) {
 		makeAbsoluteTicks();
 	}
 	int length = getNumTracks();
-	for (int i=0; i<(int)m_events[aTrack1]->size(); i++) {
+	for (int i=0; i<int(m_events[aTrack1]->size()); i++) {
 		mergedTrack->push_back((*m_events[aTrack1])[i]);
 	}
-	for (int j=0; j<(int)m_events[aTrack2]->size(); j++) {
+	for (int j=0; j<int(m_events[aTrack2]->size()); j++) {
 		(*m_events[aTrack2])[j].track = aTrack1;
 		mergedTrack->push_back((*m_events[aTrack2])[j]);
 	}
@@ -2390,7 +2390,7 @@ void MidiFile::mergeTracks(int aTrack1, int aTrack2) {
 
 	for (int i=aTrack2; i<length-1; i++) {
 		m_events[i] = m_events[i+1];
-		for (int j=0; j<(int)m_events[i]->size(); j++) {
+		for (int j=0; j<int(m_events[i]->size()); j++) {
 			(*m_events[i])[j].track = i;
 		}
 	}
@@ -2492,14 +2492,14 @@ int MidiFile::getTrackCountAsType1(void) {
 	if (getTrackState() == TRACK_STATE_JOINED) {
 		int output = 0;
 		int i;
-		for (i=0; i<(int)m_events[0]->size(); i++) {
+		for (i=0; i<int(m_events[0]->size()); i++) {
 			if (getEvent(0,i).track > output) {
 				output = getEvent(0,i).track;
 			}
 		}
 		return output+1;  // I think the track values are 0 offset...
 	} else {
-		return (int)m_events.size();
+		return int(m_events.size());
 	}
 }
 
@@ -2556,7 +2556,7 @@ double MidiFile::linearTickInterpolationAtSecond(double seconds) {
 	// but good enough for now...
 	int startindex = -1;
 	if (seconds < lasttime / 2) {
-		for (i=0; i<(int)m_timemap.size(); i++) {
+		for (i=0; i<int(m_timemap.size()); i++) {
 			if (m_timemap[i].seconds > seconds) {
 				startindex = i-1;
 				break;
@@ -2566,7 +2566,7 @@ double MidiFile::linearTickInterpolationAtSecond(double seconds) {
 			}
 		}
 	} else {
-		for (i=(int)m_timemap.size()-1; i>0; i--) {
+		for (i=int(m_timemap.size())-1; i>0; i--) {
 			if (m_timemap[i].seconds < seconds) {
 				startindex = i+1;
 				break;
@@ -2580,7 +2580,7 @@ double MidiFile::linearTickInterpolationAtSecond(double seconds) {
 	if (startindex < 0) {
 		return -1.0;
 	}
-	if (startindex >= (int)m_timemap.size()-1) {
+	if (startindex >= int(m_timemap.size())-1) {
 		return -1.0;
 	}
 
@@ -2624,7 +2624,7 @@ double MidiFile::linearSecondInterpolationAtTick(int ticktime) {
 	// but good enough for now...
 	int startindex = -1;
 	if (ticktime < lasttick / 2) {
-		for (i=0; i<(int)m_timemap.size(); i++) {
+		for (i=0; i<int(m_timemap.size()); i++) {
 			if (m_timemap[i].tick > ticktime) {
 				startindex = i-1;
 				break;
@@ -2634,7 +2634,7 @@ double MidiFile::linearSecondInterpolationAtTick(int ticktime) {
 			}
 		}
 	} else {
-		for (i=(int)m_timemap.size()-1; i>0; i--) {
+		for (i=int(m_timemap.size())-1; i>0; i--) {
 			if (m_timemap[i].tick < ticktime) {
 				startindex = i;
 				break;
@@ -2648,7 +2648,7 @@ double MidiFile::linearSecondInterpolationAtTick(int ticktime) {
 	if (startindex < 0) {
 		return -1;
 	}
-	if (startindex >= (int)m_timemap.size()-1) {
+	if (startindex >= int(m_timemap.size())-1) {
 		return -1;
 	}
 
@@ -2767,7 +2767,7 @@ int MidiFile::extractMidiData(std::istream& input, std::vector<uchar>& array,
 		std::cerr << "Error: unexpected end of file." << std::endl;
 		return 0;
 	} else {
-		byte = (uchar)character;
+		byte = uchar(character);
 	}
 
 	if (byte < 0x80) {
@@ -2779,7 +2779,7 @@ int MidiFile::extractMidiData(std::istream& input, std::vector<uchar>& array,
 		if (runningCommand >= 0xf0) {
 			std::cerr << "Error: running status not permitted with meta and sysex"
 			     << " event." << std::endl;
-			std::cerr << "Byte is 0x" << std::hex << (int)byte << std::dec << std::endl;
+			std::cerr << "Byte is 0x" << std::hex << int(byte) << std::dec << std::endl;
 			return 0;
 		}
 	} else {
@@ -2801,7 +2801,7 @@ int MidiFile::extractMidiData(std::istream& input, std::vector<uchar>& array,
 			byte = readByte(input);
 			if (!status()) { return m_rwstatus; }
 			if (byte > 0x7f) {
-				std::cerr << "MIDI data byte too large: " << (int)byte << std::endl;
+				std::cerr << "MIDI data byte too large: " << int(byte) << std::endl;
 				m_rwstatus = false; return m_rwstatus;
 			}
 			array.push_back(byte);
@@ -2809,7 +2809,7 @@ int MidiFile::extractMidiData(std::istream& input, std::vector<uchar>& array,
 				byte = readByte(input);
 				if (!status()) { return m_rwstatus; }
 				if (byte > 0x7f) {
-					std::cerr << "MIDI data byte too large: " << (int)byte << std::endl;
+					std::cerr << "MIDI data byte too large: " << int(byte) << std::endl;
 					m_rwstatus = false; return m_rwstatus;
 				}
 				array.push_back(byte);
@@ -2821,7 +2821,7 @@ int MidiFile::extractMidiData(std::istream& input, std::vector<uchar>& array,
 				byte = readByte(input);
 				if (!status()) { return m_rwstatus; }
 				if (byte > 0x7f) {
-					std::cerr << "MIDI data byte too large: " << (int)byte << std::endl;
+					std::cerr << "MIDI data byte too large: " << int(byte) << std::endl;
 					m_rwstatus = false; return m_rwstatus;
 				}
 				array.push_back(byte);
@@ -2874,7 +2874,7 @@ int MidiFile::extractMidiData(std::istream& input, std::vector<uchar>& array,
 					} else {
 						length = byte1;
 					}
-					for (int j=0; j<(int)length; j++) {
+					for (int j=0; j<int(length); j++) {
 						byte = readByte(input); // meta type
 						if (!status()) { return m_rwstatus; }
 						array.push_back(byte);
@@ -2896,7 +2896,7 @@ int MidiFile::extractMidiData(std::istream& input, std::vector<uchar>& array,
 				             // that this is a raw byte message.
 				case 0xf0:   // System Exclusive message
 					{         // (complete, or start of message).
-					int length = (int)readVLValue(input);
+					int length = int(readVLValue(input));
 					for (int i=0; i<length; i++) {
 						byte = readByte(input);
 						if (!status()) { return m_rwstatus; }
@@ -2911,7 +2911,7 @@ int MidiFile::extractMidiData(std::istream& input, std::vector<uchar>& array,
 			break;
 		default:
 			std::cout << "Error reading midifile" << std::endl;
-			std::cout << "Command byte was " << (int)runningCommand << std::endl;
+			std::cout << "Command byte was " << int(runningCommand) << std::endl;
 			return 0;
 	}
 	return 1;
@@ -2988,15 +2988,15 @@ ulong MidiFile::unpackVLV(uchar a, uchar b, uchar c, uchar d, uchar e) {
 void MidiFile::writeVLValue(long aValue, std::vector<uchar>& outdata) {
 	uchar bytes[4] = {0};
 
-	if ((unsigned long)aValue >= (1 << 28)) {
+	if (ulong(aValue) >= (1 << 28)) {
 		std::cerr << "Error: number too large to convert to VLV" << std::endl;
 		aValue = 0x0FFFffff;
 	}
 
-	bytes[0] = (uchar)(((ulong)aValue >> 21) & 0x7f);  // most significant 7 bits
-	bytes[1] = (uchar)(((ulong)aValue >> 14) & 0x7f);
-	bytes[2] = (uchar)(((ulong)aValue >> 7)  & 0x7f);
-	bytes[3] = (uchar)(((ulong)aValue)       & 0x7f);  // least significant 7 bits
+	bytes[0] = uchar((ulong(aValue) >> 21) & 0x7f);  // most significant 7 bits
+	bytes[1] = uchar((ulong(aValue) >> 14) & 0x7f);
+	bytes[2] = uchar((ulong(aValue) >> 7)  & 0x7f);
+	bytes[3] = uchar((ulong(aValue))       & 0x7f);  // least significant 7 bits
 
 	int start = 0;
 	while ((start<4) && (bytes[start] == 0))  start++;
@@ -3040,8 +3040,8 @@ void MidiFile::clear_no_deallocate(void) {
 //
 
 int MidiFile::ticksearch(const void* A, const void* B) {
-	_TickTime& a = *((_TickTime*)A);
-	_TickTime& b = *((_TickTime*)B);
+	_TickTime& a = *(reinterpret_cast<_TickTime*>(const_cast<void *>(A)));
+	_TickTime& b = *(reinterpret_cast<_TickTime*>(const_cast<void *>(B)));
 
 	if (a.tick < b.tick) {
 		return -1;
@@ -3059,8 +3059,8 @@ int MidiFile::ticksearch(const void* A, const void* B) {
 //
 
 int MidiFile::secondsearch(const void* A, const void* B) {
-	_TickTime& a = *((_TickTime*)A);
-	_TickTime& b = *((_TickTime*)B);
+	_TickTime& a = *(reinterpret_cast<_TickTime*>(const_cast<void *>(A)));
+	_TickTime& b = *(reinterpret_cast<_TickTime*>(const_cast<void *>(B)));
 
 	if (a.seconds < b.seconds) {
 		return -1;
@@ -3086,7 +3086,7 @@ int MidiFile::secondsearch(const void* A, const void* B) {
 
 ulong MidiFile::readLittleEndian4Bytes(std::istream& input) {
 	uchar buffer[4] = {0};
-	input.read((char*)buffer, 4);
+	input.read(reinterpret_cast<char*>(buffer), 4);
 	if (input.eof()) {
 		std::cerr << "Error: unexpected end of file." << std::endl;
 		return 0;
@@ -3105,7 +3105,7 @@ ulong MidiFile::readLittleEndian4Bytes(std::istream& input) {
 
 ushort MidiFile::readLittleEndian2Bytes(std::istream& input) {
 	uchar buffer[2] = {0};
-	input.read((char*)buffer, 2);
+	input.read(reinterpret_cast<char*>(buffer), 2);
 	if (input.eof()) {
 		std::cerr << "Error: unexpected end of file." << std::endl;
 		return 0;
@@ -3124,7 +3124,7 @@ ushort MidiFile::readLittleEndian2Bytes(std::istream& input) {
 
 uchar MidiFile::readByte(std::istream& input) {
 	uchar buffer[1] = {0};
-	input.read((char*)buffer, 1);
+	input.read(reinterpret_cast<char*>(buffer), 1);
 	if (input.eof()) {
 		std::cerr << "Error: unexpected end of file." << std::endl;
 		m_rwstatus = false;

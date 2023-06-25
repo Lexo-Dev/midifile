@@ -141,7 +141,7 @@ const MidiEvent& MidiEventList::getEvent(int index) const {
 //
 
 void MidiEventList::clear(void) {
-	for (int i=0; i<(int)list.size(); i++) {
+	for (int i=0; i<int(list.size()); i++) {
 		if (list[i] != NULL) {
 			delete list[i];
 			list[i] = NULL;
@@ -172,7 +172,7 @@ MidiEvent** MidiEventList::data(void) {
 //
 
 void MidiEventList::reserve(int rsize) {
-	if (rsize > (int)list.size()) {
+	if (rsize > int(list.size())) {
 		list.reserve(rsize);
 	}
 }
@@ -185,7 +185,7 @@ void MidiEventList::reserve(int rsize) {
 //
 
 int MidiEventList::getSize(void) const {
-	return (int)list.size();
+	return int(list.size());
 }
 
 //
@@ -215,7 +215,7 @@ int MidiEventList::getEventCount(void) const {
 int MidiEventList::append(MidiEvent& event) {
 	MidiEvent* ptr = new MidiEvent(event);
 	list.push_back(ptr);
-	return (int)list.size()-1;
+	return int(list.size())-1;
 }
 
 //
@@ -245,7 +245,7 @@ int MidiEventList::push_back(MidiEvent& event) {
 
 void MidiEventList::removeEmpties(void) {
 	int count = 0;
-	for (int i=0; i<(int)list.size(); i++) {
+	for (int i=0; i<int(list.size()); i++) {
 		if (list[i]->empty()) {
 			delete list[i];
 			list[i] = NULL;
@@ -257,7 +257,7 @@ void MidiEventList::removeEmpties(void) {
 	}
 	std::vector<MidiEvent*> newlist;
 	newlist.reserve(list.size() - count);
-	for (int i=0; i<(int)list.size(); i++) {
+	for (int i=0; i<int(list.size()); i++) {
 		if (list[i]) {
 			newlist.push_back(list[i]);
 		}
@@ -292,7 +292,7 @@ int MidiEventList::linkNotePairs(void) {
 	// dimension 3: List of active note-ons or note-offs.
 	std::vector<std::vector<std::vector<MidiEvent*>>> noteons;
 	noteons.resize(16);
-	for (int i=0; i<(int)noteons.size(); i++) {
+	for (int i=0; i<int(noteons.size()); i++) {
 		noteons[i].resize(128);
 	}
 
@@ -424,7 +424,7 @@ int MidiEventList::linkNotePairs(void) {
 //
 
 void MidiEventList::clearLinks(void) {
-	for (int i=0; i<(int)getSize(); i++) {
+	for (int i=0; i<int(getSize()); i++) {
 		getEvent(i).unlinkEvent();
 	}
 }
@@ -498,7 +498,7 @@ void MidiEventList::detach(void) {
 
 int MidiEventList::push_back_no_copy(MidiEvent* event) {
 	list.push_back(event);
-	return (int)list.size()-1;
+	return int(list.size())-1;
 }
 
 
@@ -551,8 +551,8 @@ void MidiEventList::sort(void) {
 //
 
 int eventcompare(const void* a, const void* b) {
-	MidiEvent& aevent = **((MidiEvent**)a);
-	MidiEvent& bevent = **((MidiEvent**)b);
+	MidiEvent& aevent = **(reinterpret_cast<MidiEvent**>(const_cast<void *>(a)));
+	MidiEvent& bevent = **(reinterpret_cast<MidiEvent**>(const_cast<void *>(b)));
 
 	if (aevent.tick > bevent.tick) {
 		// aevent occurs after bevent

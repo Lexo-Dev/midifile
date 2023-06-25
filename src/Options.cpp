@@ -385,7 +385,7 @@ int Options::define(const std::string& aDefinition) {
 	// Set up space for a option entry in the register
 	definitionEntry = new Option_register(aDefinition, otype[0], ovalue);
 
-	int definitionIndex = (int)m_optionRegister.size();
+	int definitionIndex = int(m_optionRegister.size());
 
 	// Store option aliases
 	std::string optionName;
@@ -446,7 +446,7 @@ bool Options::isDefined(const std::string& name) {
 //
 
 const std::string& Options::getArg(int index) {
-	if (index < 0 || index >= (int)m_argument.size()) {
+	if (index < 0 || index >= int(m_argument.size())) {
 		std::cerr << "Error: m_argument " << index << " does not exist." << std::endl;
 		exit(1);
 	}
@@ -468,7 +468,7 @@ const std::string& Options::getArgument(int index) {
 //
 
 int Options::getArgCount(void) {
-	return ((int)m_argument.size()) - 1;
+	return int(m_argument.size()) - 1;
 }
 
 // Alias:
@@ -580,7 +580,7 @@ std::string Options::getDefinition(const std::string& optionName) {
 //
 
 double Options::getDouble(const std::string& optionName) {
-	return strtod(getString(optionName).c_str(), (char**)NULL);
+	return strtod(getString(optionName).c_str(), nullptr);
 }
 
 
@@ -604,7 +604,7 @@ char Options::getChar(const std::string& optionName) {
 //
 
 float Options::getFloat(const std::string& optionName) {
-	return (float)getDouble(optionName);
+	return float(getDouble(optionName));
 }
 
 
@@ -617,7 +617,7 @@ float Options::getFloat(const std::string& optionName) {
 //
 
 int Options::getInt(const std::string& optionName) {
-	return (int)strtol(getString(optionName).c_str(), (char**)NULL, 0);
+	return int(strtol(getString(optionName).c_str(), nullptr, 0));
 }
 
 int Options::getInteger(const std::string& optionName) {
@@ -754,7 +754,7 @@ void Options::setOptions(int argc, char** argv) {
 		m_extraArgv[i] = m_extraArgv_strings[i];
 	}
 
-	m_oargc  = (int)m_extraArgv.size();
+	m_oargc  = int(m_extraArgv.size());
 	m_oargv  = m_extraArgv;
 }
 
@@ -774,7 +774,7 @@ void Options::appendOptions(int argc, char** argv) {
 	//gargv = argv;
 	// but now gets interfaced to: m_extraArgv and m_extraArgv_strings:
 
-	int oldsize = (int)m_extraArgv.size();
+	int oldsize = int(m_extraArgv.size());
 	m_extraArgv.resize(oldsize + argc);
 	m_extraArgv_strings.resize(oldsize + argc);
 
@@ -784,7 +784,7 @@ void Options::appendOptions(int argc, char** argv) {
 		m_extraArgv[i+oldsize] = m_extraArgv_strings[i+oldsize];
 	}
 
-	m_oargc = (int)m_extraArgv.size();
+	m_oargc = int(m_extraArgv.size());
 	m_oargv = m_extraArgv;
 }
 
@@ -792,7 +792,7 @@ void Options::appendOptions(int argc, char** argv) {
 void Options::appendOptions(const std::vector<std::string>& argv) {
 	m_processedQ = 0;
 
-	int oldsize = (int)m_extraArgv.size();
+	int oldsize = int(m_extraArgv.size());
 	m_extraArgv.resize(oldsize + argv.size());
 	m_extraArgv_strings.resize(oldsize + argv.size());
 
@@ -802,7 +802,7 @@ void Options::appendOptions(const std::vector<std::string>& argv) {
 		m_extraArgv[i+oldsize] = m_extraArgv_strings[i+oldsize];
 	}
 
-	m_oargc = (int)m_extraArgv.size();
+	m_oargc = int(m_extraArgv.size());
 	m_oargv = m_extraArgv;
 }
 
@@ -834,7 +834,7 @@ void Options::appendOptions(const std::string& strang) {
 
 	char ch = '\0';
 
-	int length = (int)strang.size();
+	int length = int(strang.size());
 	for (int i=0; i<length; i++) {
 
 		if (!singlequote && (strang[i] == '"')) {
@@ -892,7 +892,7 @@ void Options::appendOptions(const std::string& strang) {
 	// assemble the argv structure
 
 	tempargv.reserve(tokens.size());
-	for (int i=0; i<(int)tempargv.size(); i++) {
+	for (int i=0; i<int(tempargv.size()); i++) {
 		tempargv[i] = tokens[i];
 	}
 

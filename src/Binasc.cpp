@@ -458,7 +458,7 @@ int Binasc::outputStyleBinary(std::ostream& out, std::istream& input) {
 		if (ch < 0x10) {
 			out << '0';
 		}
-		out << std::hex << (int)ch << ' ';
+		out << std::hex << int(ch) << ' ';
 		currentByte++;
 		if (currentByte >= m_maxLineBytes) {
 			out << '\n';
@@ -497,7 +497,7 @@ int Binasc::outputStyleBoth(std::ostream& out, std::istream& input) {
 		if (ch < 0x10) {
 			out << '0';
 		}
-		out << std::hex << (int)ch << ' ';
+		out << std::hex << int(ch) << ' ';
 		currentByte++;
 
 		asciiLine[index++] = ' ';
@@ -538,7 +538,7 @@ int Binasc::processLine(std::ostream& out, const std::string& input,
 		int lineCount) {
 	int status = 1;
 	int i = 0;
-	int length = (int)input.size();
+	int length = int(input.size());
 	std::string word;
 	while (i<length) {
 		if ((input[i] == ';') || (input[i] == '#') || (input[i] == '/')) {
@@ -602,7 +602,7 @@ int Binasc::getWord(std::string& word, const std::string& input,
 	if (terminators.find('"') != std::string::npos) {
 		escape = 1;
 	}
-	while (i < (int)input.size()) {
+	while (i < int(input.size())) {
 		if (escape && input[i] == '\"') {
 			ecount++;
 			i++;
@@ -610,7 +610,7 @@ int Binasc::getWord(std::string& word, const std::string& input,
 				break;
 			}
 		}
-		if (escape && (i<(int)input.size()-1) && (input[i] == '\\')
+		if (escape && (i<int(input.size())-1) && (input[i] == '\\')
 				&& (input[i+1] == '"')) {
 			word.push_back(input[i+1]);
 			i += 2;
@@ -635,11 +635,11 @@ int Binasc::getWord(std::string& word, const std::string& input,
 int Binasc::getVLV(std::istream& infile, int& trackbytes) {
 	int output = 0;
 	uchar ch = 0;
-	infile.read((char*)&ch, 1);
+	infile.read(reinterpret_cast<char*>(&ch), 1);
 	trackbytes++;
 	output = (output << 7) | (0x7f & ch);
 	while (ch >= 0x80) {
-		infile.read((char*)&ch, 1);
+		infile.read(reinterpret_cast<char*>(&ch), 1);
 		trackbytes++;
 		output = (output << 7) | (0x7f & ch);
 	}
@@ -670,36 +670,36 @@ int Binasc::readMidiEvent(std::ostream& out, std::istream& infile,
 	int status = 1;
 	uchar ch = 0;
 	char byte1, byte2;
-	infile.read((char*)&ch, 1);
+	infile.read(reinterpret_cast<char*>(&ch), 1);
 	trackbytes++;
 	if (ch < 0x80) {
 		// running status: command byte is previous one in data stream
 		output << "   ";
 	} else {
 		// midi command byte
-		output << std::hex << (int)ch;
+		output << std::hex << int(ch);
 		command = ch;
-		infile.read((char*)&ch, 1);
+		infile.read(reinterpret_cast<char*>(&ch), 1);
 		trackbytes++;
 	}
 	byte1 = ch;
 	switch (command & 0xf0) {
 		case 0x80:    // note-off: 2 bytes
-			output << " '" << std::dec << (int)byte1;
-			infile.read((char*)&ch, 1);
+			output << " '" << std::dec << int(byte1);
+			infile.read(reinterpret_cast<char*>(&ch), 1);
 			trackbytes++;
 			byte2 = ch;
-			output << " '" << std::dec << (int)byte2;
+			output << " '" << std::dec << int(byte2);
 			if (m_commentsQ) {
 				comment += "note-off " + keyToPitchName(byte1);
 			}
 			break;
 		case 0x90:    // note-on: 2 bytes
-			output << " '" << std::dec << (int)byte1;
-			infile.read((char*)&ch, 1);
+			output << " '" << std::dec << int(byte1);
+			infile.read(reinterpret_cast<char*>(&ch), 1);
 			trackbytes++;
 			byte2 = ch;
-			output << " '" << std::dec << (int)byte2;
+			output << " '" << std::dec << int(byte2);
 			if (m_commentsQ) {
 				if (byte2 == 0) {
 					comment += "note-off " + keyToPitchName(byte1);
@@ -709,37 +709,37 @@ int Binasc::readMidiEvent(std::ostream& out, std::istream& infile,
 			}
 			break;
 		case 0xA0:    // aftertouch: 2 bytes
-			output << " '" << std::dec << (int)byte1;
-			infile.read((char*)&ch, 1);
+			output << " '" << std::dec << int(byte1);
+			infile.read(reinterpret_cast<char*>(&ch), 1);
 			trackbytes++;
 			byte2 = ch;
-			output << " '" << std::dec << (int)byte2;
+			output << " '" << std::dec << int(byte2);
 			if (m_commentsQ) {
 				comment += "after-touch";
 			}
 			break;
 		case 0xB0:    // continuous controller: 2 bytes
-			output << " '" << std::dec << (int)byte1;
-			infile.read((char*)&ch, 1);
+			output << " '" << std::dec << int(byte1);
+			infile.read(reinterpret_cast<char*>(&ch), 1);
 			trackbytes++;
 			byte2 = ch;
-			output << " '" << std::dec << (int)byte2;
+			output << " '" << std::dec << int(byte2);
 			if (m_commentsQ) {
 				comment += "controller";
 			}
 			break;
 		case 0xE0:    // pitch-bend: 2 bytes
-			output << " '" << std::dec << (int)byte1;
-			infile.read((char*)&ch, 1);
+			output << " '" << std::dec << int(byte1);
+			infile.read(reinterpret_cast<char*>(&ch), 1);
 			trackbytes++;
 			byte2 = ch;
-			output << " '" << std::dec << (int)byte2;
+			output << " '" << std::dec << int(byte2);
 			if (m_commentsQ) {
 				comment += "pitch-bend";
 			}
 			break;
 		case 0xC0:    // patch change: 1 bytes
-			output << " '" << std::dec << (int)byte1;
+			output << " '" << std::dec << int(byte1);
 			if (m_commentsQ) {
 				output << "\t";
 				comment += "patch-change (";
@@ -748,7 +748,7 @@ int Binasc::readMidiEvent(std::ostream& out, std::istream& infile,
 			}
 			break;
 		case 0xD0:    // channel pressure: 1 bytes
-			output << " '" << std::dec << (int)byte1;
+			output << " '" << std::dec << int(byte1);
 			if (m_commentsQ) {
 				comment += "channel pressure";
 			}
@@ -763,12 +763,12 @@ int Binasc::readMidiEvent(std::ostream& out, std::istream& infile,
 					int length = getVLV(infile, trackbytes);
 					output << " v" << std::dec << length;
 					for (int b=0; b<length; b++) {
-						infile.read((char*)&ch, 1);
+						infile.read(reinterpret_cast<char*>(&ch), 1);
 						trackbytes++;
 						if (ch < 0x10) {
-						   output << " 0" << std::hex << (int)ch;
+						   output << " 0" << std::hex << int(ch);
 						} else {
-						   output << " " << std::hex << (int)ch;
+						   output << " " << std::hex << int(ch);
 						}
 					}
 					}
@@ -784,12 +784,12 @@ int Binasc::readMidiEvent(std::ostream& out, std::istream& infile,
 					int length = getVLV(infile, trackbytes);
 					output << " v" << std::dec << length;
 					for (int i=0; i<length; i++) {
-						infile.read((char*)&ch, 1);
+						infile.read(reinterpret_cast<char*>(&ch), 1);
 						trackbytes++;
 						if (ch < 0x10) {
-						   output << " 0" << std::hex << (int)ch;
+						   output << " 0" << std::hex << int(ch);
 						} else {
-						   output << " " << std::hex << (int)ch;
+						   output << " " << std::hex << int(ch);
 						}
 					}
 					}
@@ -833,10 +833,10 @@ int Binasc::readMidiEvent(std::ostream& out, std::istream& infile,
 						case 0x00:  // sequence number
 						   // display two-byte big-endian decimal value.
 						   {
-						   infile.read((char*)&ch, 1);
+						   infile.read(reinterpret_cast<char*>(&ch), 1);
 						   trackbytes++;
 						   int number = ch;
-						   infile.read((char*)&ch, 1);
+						   infile.read(reinterpret_cast<char*>(&ch), 1);
 						   trackbytes++;
 						   number = (number << 8) | ch;
 						   output << " 2'" << number;
@@ -846,22 +846,22 @@ int Binasc::readMidiEvent(std::ostream& out, std::istream& infile,
 						case 0x20: // MIDI channel prefix
 						case 0x21: // MIDI port
 						   // display single-byte decimal number
-						   infile.read((char*)&ch, 1);
+						   infile.read(reinterpret_cast<char*>(&ch), 1);
 						   trackbytes++;
-						   output << " '" << (int)ch;
+						   output << " '" << int(ch);
 						   break;
 
 						case 0x51: // Tempo
 						    // display tempo as "t" word.
 						    {
 						    int number = 0;
-						    infile.read((char*)&ch, 1);
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
 						    number = (number << 8) | ch;
-						    infile.read((char*)&ch, 1);
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
 						    number = (number << 8) | ch;
-						    infile.read((char*)&ch, 1);
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
 						    number = (number << 8) | ch;
 						    double tempo = 1000000.0 / number * 60.0;
@@ -870,45 +870,45 @@ int Binasc::readMidiEvent(std::ostream& out, std::istream& infile,
 						    break;
 
 						case 0x54: // SMPTE offset
-						    infile.read((char*)&ch, 1);
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // hour
-						    infile.read((char*)&ch, 1);
+						    output << " '" << int(ch);  // hour
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // minutes
-						    infile.read((char*)&ch, 1);
+						    output << " '" << int(ch);  // minutes
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // seconds
-						    infile.read((char*)&ch, 1);
+						    output << " '" << int(ch);  // seconds
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // frames
-						    infile.read((char*)&ch, 1);
+						    output << " '" << int(ch);  // frames
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // subframes
+						    output << " '" << int(ch);  // subframes
 						    break;
 
 						case 0x58: // time signature
-						    infile.read((char*)&ch, 1);
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // numerator
-						    infile.read((char*)&ch, 1);
+						    output << " '" << int(ch);  // numerator
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // denominator power
-						    infile.read((char*)&ch, 1);
+						    output << " '" << int(ch);  // denominator power
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // clocks per beat
-						    infile.read((char*)&ch, 1);
+						    output << " '" << int(ch);  // clocks per beat
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // 32nd notes per beat
+						    output << " '" << int(ch);  // 32nd notes per beat
 						    break;
 
 						case 0x59: // key signature
-						    infile.read((char*)&ch, 1);
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // accidentals
-						    infile.read((char*)&ch, 1);
+						    output << " '" << int(ch);  // accidentals
+						    infile.read(reinterpret_cast<char*>(&ch), 1);
 						    trackbytes++;
-						    output << " '" << (int)ch;  // mode
+						    output << " '" << int(ch);  // mode
 						    break;
 
 						case 0x01: // text
@@ -922,24 +922,24 @@ int Binasc::readMidiEvent(std::ostream& out, std::istream& infile,
 						case 0x09: // device name
 						   output << " \"";
 						   for (int i=0; i<length; i++) {
-						      infile.read((char*)&ch, 1);
+						      infile.read(reinterpret_cast<char*>(&ch), 1);
 						      trackbytes++;
 								if (ch == '"') {
 									output << '\\';
 								}
-						      output << (char)ch;
+						      output << char(ch);
 						   }
 						   output << "\"";
 						   break;
 						default:
 						   for (int i=0; i<length; i++) {
-						      infile.read((char*)&ch, 1);
+						      infile.read(reinterpret_cast<char*>(&ch), 1);
 						      trackbytes++;
 						      output << " ";
 						      if (ch < 0x10) {
 						         output << "0";
 						      }
-						      output << std::hex << (int)ch;
+						      output << std::hex << int(ch);
 						   }
 					}
 					switch (metatype) {
@@ -1023,7 +1023,7 @@ std::string Binasc::keyToPitchName(int key) {
 int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 	uchar ch = 0;                      // current input byte
 	std::stringstream tempout;
-	input.read((char*)&ch, 1);
+	input.read(reinterpret_cast<char*>(&ch), 1);
 
 	if (input.eof()) {
 		std::cerr << "End of the file right away!" << std::endl;
@@ -1034,11 +1034,11 @@ int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 
 	// The first four bytes must be the characters "MThd"
 	if (ch != 'M') { std::cerr << "Not a MIDI file M" << std::endl; return 0; }
-	input.read((char*)&ch, 1);
+	input.read(reinterpret_cast<char*>(&ch), 1);
 	if (ch != 'T') { std::cerr << "Not a MIDI file T" << std::endl; return 0; }
-	input.read((char*)&ch, 1);
+	input.read(reinterpret_cast<char*>(&ch), 1);
 	if (ch != 'h') { std::cerr << "Not a MIDI file h" << std::endl; return 0; }
-	input.read((char*)&ch, 1);
+	input.read(reinterpret_cast<char*>(&ch), 1);
 	if (ch != 'd') { std::cerr << "Not a MIDI file d" << std::endl; return 0; }
 	tempout << "\"MThd\"";
 	if (m_commentsQ) {
@@ -1049,10 +1049,10 @@ int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 	// The next four bytes are a big-endian byte count for the header
 	// which should nearly always be "6".
 	int headersize = 0;
-	input.read((char*)&ch, 1); headersize = (headersize << 8) | ch;
-	input.read((char*)&ch, 1); headersize = (headersize << 8) | ch;
-	input.read((char*)&ch, 1); headersize = (headersize << 8) | ch;
-	input.read((char*)&ch, 1); headersize = (headersize << 8) | ch;
+	input.read(reinterpret_cast<char*>(&ch), 1); headersize = (headersize << 8) | ch;
+	input.read(reinterpret_cast<char*>(&ch), 1); headersize = (headersize << 8) | ch;
+	input.read(reinterpret_cast<char*>(&ch), 1); headersize = (headersize << 8) | ch;
+	input.read(reinterpret_cast<char*>(&ch), 1); headersize = (headersize << 8) | ch;
 	tempout << "4'" << headersize;
 	if (m_commentsQ) {
 		tempout << "\t\t\t; bytes to follow in header chunk";
@@ -1061,9 +1061,9 @@ int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 
 	// First number in header is two-byte file type.
 	int filetype = 0;
-	input.read((char*)&ch, 1);
+	input.read(reinterpret_cast<char*>(&ch), 1);
 	filetype = (filetype << 8) | ch;
-	input.read((char*)&ch, 1);
+	input.read(reinterpret_cast<char*>(&ch), 1);
 	filetype = (filetype << 8) | ch;
 	tempout << "2'" << filetype;
 	if (m_commentsQ) {
@@ -1080,9 +1080,9 @@ int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 
 	// Second number in header is two-byte trackcount.
 	int trackcount = 0;
-	input.read((char*)&ch, 1);
+	input.read(reinterpret_cast<char*>(&ch), 1);
 	trackcount = (trackcount << 8) | ch;
-	input.read((char*)&ch, 1);
+	input.read(reinterpret_cast<char*>(&ch), 1);
 	trackcount = (trackcount << 8) | ch;
 	tempout << "2'" << trackcount;
 	if (m_commentsQ) {
@@ -1096,16 +1096,16 @@ int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 	//          ticks per frame.
 	uchar byte1 = 0;
 	uchar byte2 = 0;
-	input.read((char*)&byte1, 1);
-	input.read((char*)&byte2, 1);
+	input.read(reinterpret_cast<char*>(&byte1), 1);
+	input.read(reinterpret_cast<char*>(&byte2), 1);
 	if (byte1 & 0x80) {
 		// SMPTE divisions
-		tempout << "'-" << 0xff - (ulong)byte1 + 1;
+		tempout << "'-" << 0xff - ulong(byte1 + 1);
 		if (m_commentsQ) {
 			tempout << "\t\t\t; SMPTE frames/second";
 		}
 		tempout << std::endl;
-		tempout << "'" << std::dec << (long)byte2;
+		tempout << "'" << std::dec << long(byte2);
 		if (m_commentsQ) {
 			tempout << "\t\t\t; subframes per frame";
 		}
@@ -1125,11 +1125,11 @@ int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 	// Print any strange bytes in header:
 	int i;
 	for (i=0; i<headersize - 6; i++) {
-		input.read((char*)&ch, 1);
+		input.read(reinterpret_cast<char*>(&ch), 1);
 		if (ch < 0x10) {
 			tempout << '0';
 		}
-		tempout << std::hex << (int)ch;
+		tempout << std::hex << int(ch);
 	}
 	if (headersize - 6 > 0) {
 		tempout << "\t\t\t; unknown header bytes";
@@ -1140,14 +1140,14 @@ int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 		tempout << "\n;;; TRACK "
 				  << i << " ----------------------------------" << std::endl;
 
-		input.read((char*)&ch, 1);
+		input.read(reinterpret_cast<char*>(&ch), 1);
 		// The first four bytes of a track must be the characters "MTrk"
 		if (ch != 'M') { std::cerr << "Not a MIDI file M2" << std::endl; return 0; }
-		input.read((char*)&ch, 1);
+		input.read(reinterpret_cast<char*>(&ch), 1);
 		if (ch != 'T') { std::cerr << "Not a MIDI file T2" << std::endl; return 0; }
-		input.read((char*)&ch, 1);
+		input.read(reinterpret_cast<char*>(&ch), 1);
 		if (ch != 'r') { std::cerr << "Not a MIDI file r" << std::endl; return 0; }
-		input.read((char*)&ch, 1);
+		input.read(reinterpret_cast<char*>(&ch), 1);
 		if (ch != 'k') { std::cerr << "Not a MIDI file k" << std::endl; return 0; }
 		tempout << "\"MTrk\"";
 		if (m_commentsQ) {
@@ -1157,10 +1157,10 @@ int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 
 		// The next four bytes are a big-endian byte count for the track
 		int tracksize = 0;
-		input.read((char*)&ch, 1); tracksize = (tracksize << 8) | ch;
-		input.read((char*)&ch, 1); tracksize = (tracksize << 8) | ch;
-		input.read((char*)&ch, 1); tracksize = (tracksize << 8) | ch;
-		input.read((char*)&ch, 1); tracksize = (tracksize << 8) | ch;
+		input.read(reinterpret_cast<char*>(&ch), 1); tracksize = (tracksize << 8) | ch;
+		input.read(reinterpret_cast<char*>(&ch), 1); tracksize = (tracksize << 8) | ch;
+		input.read(reinterpret_cast<char*>(&ch), 1); tracksize = (tracksize << 8) | ch;
+		input.read(reinterpret_cast<char*>(&ch), 1); tracksize = (tracksize << 8) | ch;
 		tempout << "4'" << tracksize;
 		if (m_commentsQ) {
 			tempout << "\t\t\t; bytes to follow in track chunk";
@@ -1199,7 +1199,7 @@ int Binasc::outputStyleMidi(std::ostream& out, std::istream& input) {
 
 int Binasc::processDecimalWord(std::ostream& out, const std::string& word,
 		int lineNum) {
-	int length = (int)word.size();        // length of ascii binary number
+	int length = int(word.size());        // length of ascii binary number
 	int byteCount = -1;              // number of bytes to output
 	int quoteIndex = -1;             // index of decimal specifier
 	int signIndex = -1;              // index of any sign for number
@@ -1332,7 +1332,7 @@ int Binasc::processDecimalWord(std::ostream& out, const std::string& word,
 	// process any floating point numbers possibilities
 	if (periodIndex != -1) {
 		double doubleOutput = atof(&word[quoteIndex+1]);
-		float  floatOutput  = (float)doubleOutput;
+		float  floatOutput  = float(doubleOutput);
 		switch (byteCount) {
 			case 4:
 			  if (endianIndex == -1) {
@@ -1372,12 +1372,12 @@ int Binasc::processDecimalWord(std::ostream& out, const std::string& word,
 				std::cerr << "Decimal number out of range from -128 to 127" << std::endl;
 				return 0;
 			}
-			char charOutput = (char)tempLong;
+			char charOutput = char(tempLong);
 			out << charOutput;
 			return 1;
 		} else {
-			ulong tempLong = (ulong)atoi(&word[quoteIndex + 1]);
-			uchar ucharOutput = (uchar)tempLong;
+			ulong tempLong = ulong(atoi(&word[quoteIndex + 1]));
+			uchar ucharOutput = uchar(tempLong);
 			if (tempLong > 255) { // || (tempLong < 0)) {
 				std::cerr << "Error on line " << lineNum << " at token: " << word
 					  << std::endl;
@@ -1394,12 +1394,12 @@ int Binasc::processDecimalWord(std::ostream& out, const std::string& word,
 		case 1:
 			if (signIndex != -1) {
 				long tempLong = atoi(&word[quoteIndex + 1]);
-				char charOutput = (char)tempLong;
+				char charOutput = char(tempLong);
 				out << charOutput;
 				return 1;
 			} else {
-				ulong tempLong = (ulong)atoi(&word[quoteIndex + 1]);
-				uchar ucharOutput = (uchar)tempLong;
+				ulong tempLong = ulong(atoi(&word[quoteIndex + 1]));
+				uchar ucharOutput = uchar(tempLong);
 				out << ucharOutput;
 				return 1;
 			}
@@ -1407,7 +1407,7 @@ int Binasc::processDecimalWord(std::ostream& out, const std::string& word,
 		case 2:
 			if (signIndex != -1) {
 				long tempLong = atoi(&word[quoteIndex + 1]);
-				short shortOutput = (short)tempLong;
+				short shortOutput = short(tempLong);
 				if (endianIndex == -1) {
 					writeBigEndianShort(out, shortOutput);
 				} else {
@@ -1415,8 +1415,8 @@ int Binasc::processDecimalWord(std::ostream& out, const std::string& word,
 				}
 				return 1;
 			} else {
-				ulong tempLong = (ulong)atoi(&word[quoteIndex + 1]);
-				ushort ushortOutput = (ushort)tempLong;
+				ulong tempLong = ulong(atoi(&word[quoteIndex + 1]));
+				ushort ushortOutput = ushort(tempLong);
 				if (endianIndex == -1) {
 					writeBigEndianUShort(out, ushortOutput);
 				} else {
@@ -1434,10 +1434,10 @@ int Binasc::processDecimalWord(std::ostream& out, const std::string& word,
 					  << std::endl;
 				return 0;
 			}
-			ulong tempLong = (ulong)atoi(&word[quoteIndex + 1]);
-			uchar byte1 = (uchar)((tempLong & 0x00ff0000) >> 16);
-			uchar byte2 = (uchar)((tempLong & 0x0000ff00) >> 8);
-			uchar byte3 = (uchar)((tempLong & 0x000000ff));
+			ulong tempLong = ulong(atoi(&word[quoteIndex + 1]));
+			uchar byte1 = uchar((tempLong & 0x00ff0000) >> 16);
+			uchar byte2 = uchar((tempLong & 0x0000ff00) >> 8);
+			uchar byte3 = uchar((tempLong & 0x000000ff));
 			if (endianIndex == -1) {
 				out << byte1;
 				out << byte2;
@@ -1460,7 +1460,7 @@ int Binasc::processDecimalWord(std::ostream& out, const std::string& word,
 				}
 				return 1;
 			} else {
-				ulong tempuLong = (ulong)atoi(&word[quoteIndex + 1]);
+				ulong tempuLong = ulong(atoi(&word[quoteIndex + 1]));
 				if (endianIndex == -1) {
 					writeBigEndianULong(out, tempuLong);
 				} else {
@@ -1487,7 +1487,7 @@ int Binasc::processDecimalWord(std::ostream& out, const std::string& word,
 
 int Binasc::processHexWord(std::ostream& out, const std::string& word,
 		int lineNum) {
-	int length = (int)word.size();
+	int length = int(word.size());
 	uchar outputByte;
 
 	if (length > 2) {
@@ -1502,7 +1502,7 @@ int Binasc::processHexWord(std::ostream& out, const std::string& word,
 		return 0;
 	}
 
-	outputByte = (uchar)strtol(word.c_str(), (char**)NULL, 16);
+	outputByte = uchar(strtol(word.c_str(), nullptr, 16));
 	out << outputByte;
 	return 1;
 }
@@ -1531,7 +1531,7 @@ int Binasc::processStringWord(std::ostream& out, const std::string& word,
 
 int Binasc::processAsciiWord(std::ostream& out, const std::string& word,
 		int lineNum) {
-	int length = (int)word.size();
+	int length = int(word.size());
 	uchar outputByte;
 
 	if (word[0] != '+') {
@@ -1548,7 +1548,7 @@ int Binasc::processAsciiWord(std::ostream& out, const std::string& word,
 	}
 
 	if (length == 2) {
-		outputByte = (uchar)word[1];
+		outputByte = uchar(word[1]);
 	} else {
 		outputByte = ' ';
 	}
@@ -1566,7 +1566,7 @@ int Binasc::processAsciiWord(std::ostream& out, const std::string& word,
 
 int Binasc::processBinaryWord(std::ostream& out, const std::string& word,
 		int lineNum) {
-	int length = (int)word.size();        // length of ascii binary number
+	int length = int(word.size());        // length of ascii binary number
 	int commaIndex = -1;             // index location of comma in number
 	int leftDigits = -1;             // number of digits to left of comma
 	int rightDigits = -1;            // number of digits to right of comma
@@ -1638,19 +1638,19 @@ int Binasc::processBinaryWord(std::ostream& out, const std::string& word,
 	if (commaIndex == -1) {
 		for (i=0; i<length; i++) {
 			output = output << 1;
-			output |= word[i] - '0';
+			output |= uchar(word[i] - '0');
 		}
 	}
 	// if comma in binary number
 	else {
 		for (i=0; i<leftDigits; i++) {
 			output = output << 1;
-			output |= word[i] - '0';
+			output |= uchar(word[i] - '0');
 		}
 		output = output << (4-rightDigits);
 		for (i=0+commaIndex+1; i<rightDigits+commaIndex+1; i++) {
 			output = output << 1;
-			output |= word[i] - '0';
+			output |= uchar(word[i] - '0');
 		}
 	}
 
@@ -1746,9 +1746,9 @@ int Binasc::processMidiTempoWord(std::ostream& out, const std::string& word,
 
 	int intval = int(60.0 * 1000000.0 / value + 0.5);
 
-	uchar byte0 = intval & 0xff;
-	uchar byte1 = (intval >>  8) & 0xff;
-	uchar byte2 = (intval >> 16) & 0xff;
+	uchar byte0 = uchar(intval & 0xff);
+	uchar byte1 = uchar((intval >>  8) & 0xff);
+	uchar byte2 = uchar((intval >> 16) & 0xff);
 	out << byte2 << byte1 << byte0;
 	return 1;
 }
@@ -1788,9 +1788,9 @@ int Binasc::processMidiPitchBendWord(std::ostream& out, const std::string& word,
 		value = -1.0;
 	}
 
-	int intval = (int)(((1 << 13)-0.5)  * (value + 1.0) + 0.5);
-	uchar LSB = intval & 0x7f;
-	uchar MSB = (intval >>  7) & 0x7f;
+	int intval = int(((1 << 13)-0.5)  * (value + 1.0) + 0.5);
+	uchar LSB = uchar(intval & 0x7f);
+	uchar MSB = uchar((intval >>  7) & 0x7f);
 	out << LSB << MSB;
 	return 1;
 }

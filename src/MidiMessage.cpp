@@ -32,21 +32,21 @@ MidiMessage::MidiMessage(void) : vector<uchar>() {
 }
 
 
-MidiMessage::MidiMessage(int command) : vector<uchar>(1, (uchar)command) {
+MidiMessage::MidiMessage(int command) : vector<uchar>(1, uchar(command)) {
 	// do nothing
 }
 
 
 MidiMessage::MidiMessage(int command, int p1) : vector<uchar>(2) {
-	(*this)[0] = (uchar)command;
-	(*this)[1] = (uchar)p1;
+	(*this)[0] = uchar(command);
+	(*this)[1] = uchar(p1);
 }
 
 
 MidiMessage::MidiMessage(int command, int p1, int p2) : vector<uchar>(3) {
-	(*this)[0] = (uchar)command;
-	(*this)[1] = (uchar)p1;
-	(*this)[2] = (uchar)p2;
+	(*this)[0] = uchar(command);
+	(*this)[1] = uchar(p1);
+	(*this)[2] = uchar(p2);
 }
 
 
@@ -137,7 +137,7 @@ void MidiMessage::setSize(int asize) {
 //
 
 int MidiMessage::getSize(void) const {
-	return (int)this->size();
+	return int(this->size());
 }
 
 
@@ -152,7 +152,7 @@ int MidiMessage::getSize(void) const {
 //
 
 int MidiMessage::setSizeToCommand(void) {
-	int osize = (int)this->size();
+	int osize = int(this->size());
 	if (osize < 1) {
 		return 0;
 	}
@@ -171,7 +171,7 @@ int MidiMessage::setSizeToCommand(void) {
 		case 0xE0: bytecount = 2; break;  // Pitch Bend
 		case 0xF0:
 		default:
-			return (int)size();
+			return int(size());
 	}
 	if (bytecount + 1 < osize) {
 		resize(bytecount+1);
@@ -180,7 +180,7 @@ int MidiMessage::setSizeToCommand(void) {
 		}
 	}
 
-	return (int)size();
+	return int(size());
 }
 
 
@@ -224,7 +224,7 @@ double MidiMessage::getTempoSeconds(void) const {
 	if (microseconds < 0) {
 		return -1.0;
 	} else {
-		return (double)microseconds / 1000000.0;
+		return double(microseconds) / 1000000.0;
 	}
 }
 
@@ -241,7 +241,7 @@ double MidiMessage::getTempoBPM(void) const {
 	if (microseconds < 0) {
 		return -1.0;
 	}
-	return 60000000.0 / (double)microseconds;
+	return 60000000.0 / double(microseconds);
 }
 
 
@@ -256,7 +256,7 @@ double MidiMessage::getTempoTPS(int tpq) const {
 	if (microseconds < 0) {
 		return -1.0;
 	} else {
-		return tpq * 1000000.0 / (double)microseconds;
+		return tpq * 1000000.0 / double(microseconds);
 	}
 }
 
@@ -272,7 +272,7 @@ double MidiMessage::getTempoSPT(int tpq) const {
 	if (microseconds < 0) {
 		return -1.0;
 	} else {
-		return (double)microseconds / 1000000.0 / tpq;
+		return double(microseconds) / 1000000.0 / tpq;
 	}
 }
 
@@ -591,7 +591,7 @@ int MidiMessage::getMetaType(void) const {
 	if (!isMetaMessage()) {
 		return -1;
 	} else {
-		return (int)(*this)[1];
+		return int((*this)[1]);
 	}
 }
 
@@ -1095,7 +1095,7 @@ void MidiMessage::setCommandByte(int value) {
 	if (size() < 1) {
 		resize(1);
 	} else {
-		(*this)[0] = (uchar)(value & 0xff);
+		(*this)[0] = uchar(value & 0xff);
 	}
 }
 
@@ -1114,16 +1114,16 @@ void MidiMessage::setCommand(int value) {
 
 void MidiMessage::setCommand(int value, int p1) {
 	this->resize(2);
-	(*this)[0] = (uchar)value;
-	(*this)[1] = (uchar)p1;
+	(*this)[0] = uchar(value);
+	(*this)[1] = uchar(p1);
 }
 
 
 void MidiMessage::setCommand(int value, int p1, int p2) {
 	this->resize(3);
-	(*this)[0] = (uchar)value;
-	(*this)[1] = (uchar)p1;
-	(*this)[2] = (uchar)p2;
+	(*this)[0] = uchar(value);
+	(*this)[1] = uchar(p1);
+	(*this)[2] = uchar(p2);
 }
 
 
@@ -1138,9 +1138,9 @@ void MidiMessage::setCommandNibble(int value) {
 		this->resize(1);
 	}
 	if (value <= 0x0f) {
-		(*this)[0] = ((*this)[0] & 0x0f) | ((uchar)((value << 4) & 0xf0));
+		(*this)[0] = ((*this)[0] & 0x0f) | (uchar((value << 4) & 0xf0));
 	} else {
-		(*this)[0] = ((*this)[0] & 0x0f) | ((uchar)(value & 0xf0));
+		(*this)[0] = ((*this)[0] & 0x0f) | (uchar(value & 0xf0));
 	}
 }
 
@@ -1156,7 +1156,7 @@ void MidiMessage::setChannelNibble(int value) {
 	if (this->size() < 1) {
 		this->resize(1);
 	}
-	(*this)[0] = ((*this)[0] & 0xf0) | ((uchar)(value & 0x0f));
+	(*this)[0] = ((*this)[0] & 0xf0) | (uchar(value & 0x0f));
 }
 
 
@@ -1174,9 +1174,9 @@ void MidiMessage::setChannel(int value) {
 //
 
 void MidiMessage::setParameters(int p1) {
-	int oldsize = (int)size();
+	int oldsize = int(size());
 	resize(2);
-	(*this)[1] = (uchar)p1;
+	(*this)[1] = uchar(p1);
 	if (oldsize < 1) {
 		(*this)[0] = 0;
 	}
@@ -1184,10 +1184,10 @@ void MidiMessage::setParameters(int p1) {
 
 
 void MidiMessage::setParameters(int p1, int p2) {
-	int oldsize = (int)size();
+	int oldsize = int(size());
 	resize(3);
-	(*this)[1] = (uchar)p1;
-	(*this)[2] = (uchar)p2;
+	(*this)[1] = uchar(p1);
+	(*this)[2] = uchar(p2);
 	if (oldsize < 1) {
 		(*this)[0] = 0;
 	}
@@ -1202,7 +1202,7 @@ void MidiMessage::setParameters(int p1, int p2) {
 
 void MidiMessage::setMessage(const std::vector<uchar>& message) {
 	this->resize(message.size());
-	for (int i=0; i<(int)this->size(); i++) {
+	for (int i=0; i<int(this->size()); i++) {
 		(*this)[i] = message[i];
 	}
 }
@@ -1210,16 +1210,16 @@ void MidiMessage::setMessage(const std::vector<uchar>& message) {
 
 void MidiMessage::setMessage(const std::vector<char>& message) {
 	resize(message.size());
-	for (int i=0; i<(int)size(); i++) {
-		(*this)[i] = (uchar)message[i];
+	for (int i=0; i<int(size()); i++) {
+		(*this)[i] = uchar(message[i]);
 	}
 }
 
 
 void MidiMessage::setMessage(const std::vector<int>& message) {
 	resize(message.size());
-	for (int i=0; i<(int)size(); i++) {
-		(*this)[i] = (uchar)message[i];
+	for (int i=0; i<int(size()); i++) {
+		(*this)[i] = uchar(message[i]);
 	}
 }
 
@@ -1513,7 +1513,7 @@ std::string MidiMessage::getMetaContent(void) {
 		}
 	}
 	output.reserve(this->size());
-	for (int i=start; i<(int)this->size(); i++) {
+	for (int i=start; i<int(this->size()); i++) {
 		output.push_back(operator[](i));
 	}
 	return output;
@@ -1542,9 +1542,9 @@ void MidiMessage::setMetaContent(const std::string& content) {
 	this->resize(2);
 
 	// add the size of the meta message data (VLV)
-	int dsize = (int)content.size();
+	int dsize = int(content.size());
 	std::vector<uchar> vlv = intToVlv(dsize);
-	for (int i=0; i<(int)vlv.size(); i++) {
+	for (int i=0; i<int(vlv.size()); i++) {
 		this->push_back(vlv[i]);
 	}
 	std::copy(content.begin(), content.end(), std::back_inserter(*this));
@@ -1559,7 +1559,7 @@ void MidiMessage::setMetaContent(const std::string& content) {
 //
 
 void MidiMessage::setMetaTempo(double tempo) {
-	int microseconds = (int)(60.0 / tempo * 1000000.0 + 0.5);
+	int microseconds = static_cast<int>(60.0 / tempo * 1000000.0 + 0.5);
 	setTempoMicroseconds(microseconds);
 }
 
@@ -1584,12 +1584,12 @@ void MidiMessage::setTempo(double tempo) {
 
 void MidiMessage::setTempoMicroseconds(int microseconds) {
 	resize(6);
-	(*this)[0] = 0xff;
-	(*this)[1] = 0x51;
-	(*this)[2] = 3;
-	(*this)[3] = (microseconds >> 16) & 0xff;
-	(*this)[4] = (microseconds >>  8) & 0xff;
-	(*this)[5] = (microseconds >>  0) & 0xff;
+	(*this)[0] = uchar(0xff);
+	(*this)[1] = uchar(0x51);
+	(*this)[2] = uchar(3);
+	(*this)[3] = uchar((microseconds >> 16) & 0xff);
+	(*this)[4] = uchar((microseconds >>  8) & 0xff);
+	(*this)[5] = uchar((microseconds >>  0) & 0xff);
 }
 
 
@@ -1623,13 +1623,13 @@ void MidiMessage::makeTimeSignature(int top, int bottom, int clocksPerClick,
 	int base2 = 0;
 	while (bottom >>= 1) base2++;
 	resize(7);
-	(*this)[0] = 0xff;
-	(*this)[1] = 0x58;
-	(*this)[2] = 4;
-	(*this)[3] = 0xff & top;
-	(*this)[4] = 0xff & base2;
-	(*this)[5] = 0xff & clocksPerClick;
-	(*this)[6] = 0xff & num32ndsPerQuarter;
+	(*this)[0] = uchar(0xff);
+	(*this)[1] = uchar(0x58);
+	(*this)[2] = uchar(4);
+	(*this)[3] = uchar(0xff & top);
+	(*this)[4] = uchar(0xff & base2);
+	(*this)[5] = uchar(0xff & clocksPerClick);
+	(*this)[6] = uchar(0xff & num32ndsPerQuarter);
 }
 
 
@@ -1913,7 +1913,7 @@ void MidiMessage::makeCue(const std::string& text) {
 std::vector<uchar> MidiMessage::intToVlv(int value) {
 	std::vector<uchar> output;
 	if (value < 128) {
-		output.push_back((uchar)value);
+		output.push_back(uchar(value));
 	} else {
 		// calculate VLV bytes and insert into message
 		uchar byte1 = value & 0x7f;
@@ -1955,7 +1955,7 @@ std::vector<uchar> MidiMessage::intToVlv(int value) {
 
 void MidiMessage::makeSysExMessage(const std::vector<uchar>& data) {
 	int startindex = 0;
-	int endindex = (int)data.size() - 1;
+	int endindex = int(data.size()) - 1;
 	if (data.size() > 0) {
 		if (data[0] == 0xf0) {
 			startindex++;
@@ -1970,17 +1970,17 @@ void MidiMessage::makeSysExMessage(const std::vector<uchar>& data) {
 	this->clear();
 	this->reserve(data.size() + 7);
 
-	this->push_back((uchar)0xf0);
+	this->push_back(uchar(0xf0));
 
 	int msize = endindex - startindex + 2;
 	std::vector<uchar> vlv = intToVlv(msize);
-	for (int i=0; i<(int)vlv.size(); i++) {
+	for (int i=0; i<int(vlv.size()); i++) {
 		this->push_back(vlv[i]);
 	}
 	for (int i=startindex; i<=endindex; i++) {
 		this->push_back(data.at(i));
 	}
-	this->push_back((uchar)0xf7);
+	this->push_back(uchar(0xf7));
 }
 
 
@@ -2029,7 +2029,7 @@ void MidiMessage::makeMts2_KeyTuningByFrequency(int key, double frequency, int p
 
 void MidiMessage::makeMts2_KeyTuningsByFrequency(std::vector<std::pair<int, double>>& mapping, int program) {
 	std::vector<std::pair<int, double>> semimap(mapping.size());
-	for (int i=0; i<(int)mapping.size(); i++) {
+	for (int i=0; i<int(mapping.size()); i++) {
 		semimap[i].first = mapping[i].first;
 		semimap[i].second = MidiMessage::frequencyToSemitones(mapping[i].second);
 	}
@@ -2064,31 +2064,31 @@ void MidiMessage::makeMts2_KeyTuningsBySemitone(std::vector<std::pair<int, doubl
 	}
 	std::vector<uchar> data;
 	data.reserve(mapping.size() * 4 + 10);
-	data.push_back((uchar)0x7f);  // real-time sysex
-	data.push_back((uchar)0x7f);  // all devices
-	data.push_back((uchar)0x08);  // sub-ID#1 (MIDI Tuning)
-	data.push_back((uchar)0x02);  // sub-ID#2 (note change)
-	data.push_back((uchar)program);  // tuning program number (0 - 127)
-	std::vector<uchar> vlv = intToVlv((int)mapping.size());
-	for (int i=0; i<(int)vlv.size(); i++) {
+	data.push_back(uchar(0x7f));  // real-time sysex
+	data.push_back(uchar(0x7f));  // all devices
+	data.push_back(uchar(0x08));  // sub-ID#1 (MIDI Tuning)
+	data.push_back(uchar(0x02));  // sub-ID#2 (note change)
+	data.push_back(uchar(program));  // tuning program number (0 - 127)
+	std::vector<uchar> vlv = intToVlv(int(mapping.size()));
+	for (int i=0; i<int(vlv.size()); i++) {
 		data.push_back(vlv[i]);
 	}
-	for (int i=0; i<(int)mapping.size(); i++) {
+	for (int i=0; i<int(mapping.size()); i++) {
 		int keynum = mapping[i].first;
 		if (keynum < 0) {
 			keynum = 0;
 		} else if (keynum > 127) {
 			keynum = 127;
 		}
-		data.push_back((uchar)keynum);
+		data.push_back(uchar(keynum));
 		double semitones = mapping[i].second;
-		int sint = (int)semitones;
+		int sint = int(semitones);
 		if (sint < 0) {
 			sint = 0;
 		} else if (sint > 127) {
 			sint = 127;
 		}
-		data.push_back((uchar)sint);
+		data.push_back(uchar(sint));
 		double fraction = semitones - sint;
 		int value = int(fraction * (1 << 14));
 		uchar lsb = value & 0x7f;
@@ -2119,10 +2119,10 @@ void MidiMessage::makeMts9_TemperamentByCentsDeviationFromET (std::vector<double
 	std::vector<uchar> data;
 	data.reserve(24 + 7);
 
-	data.push_back((uchar)0x7f);  // real-time sysex
-	data.push_back((uchar)0x7f);  // all devices
-	data.push_back((uchar)0x08);  // sub-ID#1 (MIDI Tuning)
-	data.push_back((uchar)0x09);  // sub-ID#2 (note change)
+	data.push_back(uchar(0x7f));  // real-time sysex
+	data.push_back(uchar(0x7f));  // all devices
+	data.push_back(uchar(0x08));  // sub-ID#1 (MIDI Tuning)
+	data.push_back(uchar(0x09));  // sub-ID#2 (note change)
 
 	uchar MMSB = (channelMask >> 14) & 0x3;
 	uchar MSB  = (channelMask >> 7)  & 0x7f;
@@ -2132,7 +2132,7 @@ void MidiMessage::makeMts9_TemperamentByCentsDeviationFromET (std::vector<double
 	data.push_back(MSB);
 	data.push_back(LSB);
 
-	for (int i=0; i<(int)mapping.size(); i++) {
+	for (int i=0; i<int(mapping.size()); i++) {
 		int ii = (i - referencePitchClass + 48) % 12;
 		double value = mapping.at(ii) / 100.0;
 
@@ -2143,7 +2143,7 @@ void MidiMessage::makeMts9_TemperamentByCentsDeviationFromET (std::vector<double
 			value = -1.0;
 		}
 
-		int intval = (int)(((1 << 13)-0.5)  * (value + 1.0) + 0.5);
+		int intval = static_cast<int>(((1 << 13)-0.5)  * (value + 1.0) + 0.5);
 		uchar LSB = intval & 0x7f;
 		uchar MSB = (intval >>  7) & 0x7f;
 		data.push_back(MSB);
@@ -2179,7 +2179,7 @@ void MidiMessage::makeTemperamentBad(double maxDeviationCents, int referencePitc
 		maxDeviationCents = 100.0;
 	}
 	std::vector<double> temperament(12);
-	for (int i=0; i<(int)temperament.size(); i++) {
+	for (int i=0; i<int(temperament.size()); i++) {
 		temperament[i] = ((rand() / (double)RAND_MAX) * 2.0 - 1.0) * maxDeviationCents;
 	}
 	this->makeMts9_TemperamentByCentsDeviationFromET(temperament, referencePitchClass, channelMask);
