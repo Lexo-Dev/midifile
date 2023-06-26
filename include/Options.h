@@ -59,12 +59,12 @@ class Option_register {
 	  std::ostream&      print              (std::ostream& out);
 
 	protected:
-		std::string       m_definition;
-		std::string       m_description;
-		std::string       m_defaultOption;
-		std::string       m_modifiedOption;
-		bool              m_modifiedQ;
-		char              m_type;
+		std::string       m_definition {};
+		std::string       m_description {};
+		std::string       m_defaultOption {};
+		std::string       m_modifiedOption {};
+		bool              m_modifiedQ {};
+		char              m_type {};
 
 };
 
@@ -123,22 +123,22 @@ class Options {
 		bool               isDefined         (const std::string& name);
 
 	protected:
-		int                           m_options_error_check;  // verify command
-		int                           m_oargc;
-		std::vector<std::string>      m_oargv;
-		std::string                   m_commandString;
-		char                          m_optionFlag;
-		std::vector<std::string>      m_argument;
+		int                           m_options_error_check {};  // verify command
+		int                           m_oargc {};
+		std::vector<std::string>      m_oargv {};
+		std::string                   m_commandString {};
+		char                          m_optionFlag {};
+		std::vector<std::string>      m_argument {};
 
-		std::vector<Option_register*> m_optionRegister;
-		std::map<std::string, int>    m_optionList;
+		std::vector<Option_register*> m_optionRegister {};
+		std::map<std::string, int>    m_optionList {};
 
-		bool                          m_processedQ;
-		bool                          m_suppressQ;       // prevent --options
-		bool                          m_optionsArgument; // --options present
+		bool                          m_processedQ {};
+		bool                          m_suppressQ {};       // prevent --options
+		bool                          m_optionsArgument {}; // --options present
 
-		std::vector<std::string>      m_extraArgv;
-		std::vector<std::string>      m_extraArgv_strings;
+		std::vector<std::string>      m_extraArgv {};
+		std::vector<std::string>      m_extraArgv_strings {};
 
 	private:
 		int                getRegIndex       (const std::string& optionName);

@@ -60,7 +60,7 @@ class MidiEventList {
 		MidiEvent**      data               (void);
 
 	protected:
-		std::vector<MidiEvent*> list;
+		std::vector<MidiEvent*> list {};
 
 	private:
 		void             sort                (void);

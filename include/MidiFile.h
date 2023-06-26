@@ -258,7 +258,7 @@ class MidiFile {
 
 	protected:
 		// m_events == Lists of MidiEvents for each MIDI file track.
-		std::vector<MidiEventList*> m_events;
+		std::vector<MidiEventList*> m_events {};
 
 		// m_ticksPerQuarterNote == A value for the MIDI file header
 		// which represents the number of ticks in a quarter note
@@ -277,13 +277,13 @@ class MidiFile {
 
 		// m_readFileName == the filename of the last file read into
 		// the object.
-		std::string m_readFileName;
+		std::string m_readFileName {};
 
 		// m_timemapvalid ==
 		bool m_timemapvalid = false;
 
 		// m_timemap ==
-		std::vector<_TickTime> m_timemap;
+		std::vector<_TickTime> m_timemap {};
 
 		// m_rwstatus == True if last read was successful, false if a problem.
 		bool m_rwstatus = true;

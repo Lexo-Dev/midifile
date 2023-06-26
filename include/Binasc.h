@@ -100,11 +100,11 @@ class Binasc {
 		static std::string   keyToPitchName          (int key);
 
 	protected:
-		int m_bytesQ;       // option for printing hex bytes in ASCII output.
-		int m_commentsQ;    // option for printing comments in ASCII output.
-		int m_midiQ;        // output ASCII data as parsed MIDI file.
-		int m_maxLineLength;// number of character in ASCII output on a line.
-		int m_maxLineBytes; // number of hex bytes in ASCII output on a line.
+		int m_bytesQ {};       // option for printing hex bytes in ASCII output.
+		int m_commentsQ {};    // option for printing comments in ASCII output.
+		int m_midiQ {};        // output ASCII data as parsed MIDI file.
+		int m_maxLineLength {};// number of character in ASCII output on a line.
+		int m_maxLineBytes {}; // number of hex bytes in ASCII output on a line.
 
 	private:
 		// helper functions for reading ASCII content to conver to binary:
